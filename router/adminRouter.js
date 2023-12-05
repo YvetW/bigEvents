@@ -19,8 +19,10 @@ router.use((req, res, next) => {
   // 如果是登录页就放过去
   if (req.url.startsWith("/user/login")) {
     next();
+    return
   } if (req.url.startsWith("/user/register")) {
     next();
+    return
   } else {
     // 验证token
     let authorization = req.headers.authorization;

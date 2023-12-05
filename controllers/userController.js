@@ -54,31 +54,31 @@ module.exports = {
       serverError(res)
     }
   },
-  // 用户登录
   async login(req, res) {
     const { username, password } = req.body
     try {
       let userRes = await User.findOne({
         where: {
-          username,
-          password
+          username: username,
+          password: password
         }
       })
-      if (!userRes) {
-        return res.send({
-          code: 400,
-          msg: "用户名或密码错误"
-        })
+      if (userRes == null) {
+        return res.status(403).send({
+          code: 403,
+          msg: "用户不存在或者密码错误"
+        }).end()
       }
-       // 登陆成功，添加token验证
-       let jwt = new JwtUtil(username);
-       let token = jwt.generateToken();
 
-      res.send({
+      // 注册成功，添加token验证
+      let jwt = new JwtUtil(username);
+      let token = jwt.generateToken();
+
+      return res.send({
         code: 200,
-        msg: "登录成功",
+        msg: "注册成功",
         token
-      })
+      }).end()
     } catch (error) {
       // console.log(error)
       serverError(res)
