@@ -2,11 +2,19 @@
 const fs = require('fs');
 const path = require('path');
 const jwt = require('jsonwebtoken');
+const jwt_decode = require('jwt-decode');
+
 // 创建 token 类
 class Jwt {
     constructor(data) {
         this.data = data;
 
+    }
+
+    getUsername() {
+        let token = this.data;
+        let res = jwt.decode(token)
+        return res.data
     }
 
     //生成token

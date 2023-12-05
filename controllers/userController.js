@@ -16,6 +16,44 @@ const serverError = res => {
 }
 
 module.exports = {
+  // 用户注册
+  async register(req, res) {
+    const { username, nickname, email, password } = req.body
+    try {
+      let userRes = await User.findOne({
+        where: {
+          username
+        }
+      })
+      if (userRes != null) {
+        return res.send({
+          code: 400,
+          msg: "用户已经注册"
+        })
+      }
+      let createOpt = { username, nickname, email, password }
+      let uerToRes = await User.create(createOpt)
+      if (uerToRes == null) {
+        return res.send({
+          code: 500,
+          msg: "注册失败"
+        })
+      }
+
+      // 注册成功，添加token验证
+      let jwt = new JwtUtil(username);
+      let token = jwt.generateToken();
+
+      res.send({
+        code: 200,
+        msg: "注册成功",
+        token
+      })
+    } catch (error) {
+      // console.log(error)
+      serverError(res)
+    }
+  },
   // 用户登录
   async login(req, res) {
     const { username, password } = req.body
@@ -55,10 +93,12 @@ module.exports = {
   },
   // 获取用户信息
   async info(req, res) {
+    let token = req.header('authorization');
+    let username = new JwtUtil(token).getUsername()
     try {
       let userRes = await User.findOne({
         where: {
-          id: 1
+          username: username
         },
         attributes: ["nickname", "userPic"]
       })
@@ -76,9 +116,11 @@ module.exports = {
   // 获取用户详情
   async detail(req, res) {
     try {
+      let token = req.header('authorization');
+      let username = new JwtUtil(token).getUsername()
       let userRes = await User.findOne({
         where: {
-          id: 1
+          username: username
         },
         attributes: ["nickname", "userPic", "email", "password", "username"]
       })
@@ -99,6 +141,8 @@ module.exports = {
     const { username, nickname, email, password } = req.body
     let updateOpt = { username, nickname, email, password }
     try {
+      let token = req.header('authorization');
+      let username = new JwtUtil(token).getUsername()
       let userRes = {}
       // 获取图片
       if (req.file) {
@@ -108,7 +152,7 @@ module.exports = {
         // 删除之前的那个图片
         userRes = await User.findOne({
           where: {
-            id: 1
+            username: username
           }
         })
       }

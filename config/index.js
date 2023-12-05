@@ -4,7 +4,7 @@ module.exports ={
     // 用户名
     username:'root',
     // 密码
-    password:'root',
+    password:'0729',
     // 主机
     host:'127.0.0.1',
     // 项目运行端口

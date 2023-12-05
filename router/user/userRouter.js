@@ -39,6 +39,20 @@ router.post(
   userController.login
 )
 
+router.post(
+    "/register",
+    [
+        check("username")
+            .not()
+            .isEmpty(),
+        check("password")
+            .not()
+            .isEmpty()
+    ],
+    errorMsg,
+    userController.register
+)
+
 // 用户登出
 router.post("/logout", userController.logout)
 // 获取用户信息
